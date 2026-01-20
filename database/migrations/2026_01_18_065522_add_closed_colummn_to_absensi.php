@@ -1,0 +1,27 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration {
+    public function up(): void
+    {
+        Schema::table('absensi_harian', function (Blueprint $table) {
+            $table->timestamp('closed_at')->nullable()->after('finalized_by');
+            $table->unsignedBigInteger('closed_by')->nullable()->after('closed_at');
+
+            $table->foreign('closed_by')->references('id')->on('users')->nullOnDelete();
+            $table->index('closed_at');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('absensi_harian', function (Blueprint $table) {
+            $table->dropForeign(['closed_by']);
+            $table->dropIndex(['closed_at']);
+            $table->dropColumn(['closed_at', 'closed_by']);
+        });
+    }
+};
